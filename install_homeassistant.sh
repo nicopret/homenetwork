@@ -11,14 +11,14 @@ sudo apt install -y python3 python3-venv python3-pip libffi-dev libssl-dev autoc
   libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev libgdbm-dev liblzma-dev \
   libnss3-dev bluez libbluetooth-dev
 
-echo "🏠 Creating Home Assistant user..."
+echo "👤 Creating 'homeassistant' user..."
 sudo useradd -rm homeassistant -G dialout,gpio,i2c
 
-echo "📁 Creating Home Assistant directory..."
+echo "📁 Creating virtual environment directory..."
 sudo mkdir -p /srv/homeassistant
 sudo chown homeassistant:homeassistant /srv/homeassistant
 
-echo "🐍 Creating virtual environment..."
+echo "🐍 Setting up Home Assistant in virtual environment..."
 sudo -u homeassistant -H bash -c "
 cd /srv/homeassistant
 python3 -m venv .
@@ -28,11 +28,30 @@ pip install wheel
 pip install homeassistant
 "
 
-echo "✅ Home Assistant installed!"
-echo "👉 To start Home Assistant:"
-echo "   sudo -u homeassistant -H -s"
-echo "   cd /srv/homeassistant"
-echo "   source bin/activate"
-echo "   hass"
+echo "🛠 Creating systemd service for auto-start..."
 
-echo "🌐 After first launch, open: http://<your-raspberry-ip>:8123"
+cat <<EOF | sudo tee /etc/systemd/system/home-assistant@homeassistant.service
+[Unit]
+Description=Home Assistant
+After=network-online.target
+
+[Service]
+Type=simple
+User=%i
+ExecStart=/srv/homeassistant/bin/hass -c /home/%i/.homeassistant
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo "🔁 Enabling and starting Home Assistant service..."
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable home-assistant@homeassistant
+sudo systemctl start home-assistant@homeassistant
+
+echo "✅ Home Assistant Core is installed and running!"
+echo "🌐 Access it at: http://<your-pi-ip>:8123"
+echo "🔁 Service status: sudo systemctl status home-assistant@homeassistant"
