@@ -12,9 +12,19 @@ sudo apt update && sudo apt upgrade -y
 echo "⬇️ Installing Prometheus..."
 cd /tmp
 PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep tag_name | cut -d '"' -f 4)
-wget https://github.com/prometheus/prometheus/releases/download/$PROM_VERSION/prometheus-$(echo $PROM_VERSION | cut -c2-).linux-armv7.tar.gz
-tar xvf prometheus-${PROM_VERSION#v}.linux-armv7.tar.gz
-cd prometheus-${PROM_VERSION#v}.linux-armv7
+PROM_VERSION_CLEAN=${PROM_VERSION#v}
+FOLDER="prometheus-${PROM_VERSION_CLEAN}.linux-armv7"
+
+wget https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/${FOLDER}.tar.gz
+tar xvf ${FOLDER}.tar.gz
+cd prometheus-${PROM_VERSION_CLEAN}.linux-armv7
+
+# ✅ Check that required directories exist
+if [ ! -d "consoles" ] || [ ! -d "console_libraries" ]; then
+  echo "❌ Error: 'consoles' or 'console_libraries' directory not found."
+  exit 1
+fi
+
 sudo cp prometheus promtool /usr/local/bin/
 sudo mkdir -p /etc/prometheus /var/lib/prometheus
 sudo cp -r consoles/ console_libraries/ /etc/prometheus/
