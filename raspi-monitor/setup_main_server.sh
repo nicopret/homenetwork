@@ -91,7 +91,7 @@ cat <<EOF > "$KIOSK_FILE"
 @xset -dpms
 @xset s noblank
 @unclutter -idle 0
-@chromium-browser --noerrdialogs --disable-infobars --disable-translate --no-first-run --fast --kiosk http://localhost:3000
+@chromium-browser --noerrdialogs --disable-infobars --disable-translate --no-first-run --fast --kiosk http://localhost:3000/d/rYdddlPWk/node-exporter-full
 EOF
 
 # Ensure proper permissions
