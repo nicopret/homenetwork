@@ -17,17 +17,11 @@ FOLDER="prometheus-${PROM_VERSION_CLEAN}.linux-armv7"
 
 wget https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/${FOLDER}.tar.gz
 tar xvf ${FOLDER}.tar.gz
-cd prometheus-${PROM_VERSION_CLEAN}.linux-armv7
+cd "$FOLDER"
 
-# ✅ Check that required directories exist
-if [ ! -d "consoles" ] || [ ! -d "console_libraries" ]; then
-  echo "❌ Error: 'consoles' or 'console_libraries' directory not found."
-  exit 1
-fi
-
+# Copy Prometheus binaries
 sudo cp prometheus promtool /usr/local/bin/
 sudo mkdir -p /etc/prometheus /var/lib/prometheus
-sudo cp -r consoles/ console_libraries/ /etc/prometheus/
 
 echo "📝 Writing Prometheus config..."
 sudo tee /etc/prometheus/prometheus.yml > /dev/null <<EOF
@@ -54,9 +48,7 @@ After=network.target
 User=pi
 ExecStart=/usr/local/bin/prometheus \\
   --config.file=/etc/prometheus/prometheus.yml \\
-  --storage.tsdb.path=/var/lib/prometheus \\
-  --web.console.templates=/etc/prometheus/consoles \\
-  --web.console.libraries=/etc/prometheus/console_libraries
+  --storage.tsdb.path=/var/lib/prometheus
 
 [Install]
 WantedBy=multi-user.target
