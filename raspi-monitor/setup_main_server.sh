@@ -77,18 +77,45 @@ echo "🛠️ Configuring kiosk mode on boot..."
 KIOSK_URL="http://localhost:3000"
 KIOSK_FILE="/home/pi/.config/lxsession/LXDE-pi/autostart"
 
-mkdir -p "$(dirname "$KIOSK_FILE")"
+mkdir -p "$AUTOSTART_DIR"
 cat <<EOF > "$KIOSK_FILE"
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
 @xset s off
 @xset -dpms
 @xset s noblank
 @unclutter -idle 0
-@chromium-browser --noerrdialogs --disable-infobars --kiosk $KIOSK_URL
+@chromium-browser --noerrdialogs --disable-infobars --disable-translate --no-first-run --fast --kiosk http://localhost:3000
 EOF
+
+# Ensure proper permissions
+chown pi:pi "$KIOSK_FILE"
 
 echo "✅ Kiosk mode setup complete."
 
 echo "🔁 Enabling boot to GUI (if not already)..."
 sudo raspi-config nonint do_boot_behaviour B4
 
+echo "📥 Downloading Node Exporter Full dashboard JSON..."
+sudo mkdir -p /var/lib/grafana/dashboards
+wget -O /var/lib/grafana/dashboards/node_exporter_full.json https://grafana.com/api/dashboards/1860/revisions/29/download
+
+echo "🛠️ Configuring Grafana to auto-import dashboards..."
+sudo tee /etc/grafana/provisioning/dashboards/node_exporter.yml > /dev/null <<EOF
+apiVersion: 1
+providers:
+  - name: 'default'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards
+EOF
+
+sudo systemctl restart grafana-server
+
 echo "🎉 DONE! Reboot your Pi and Grafana will auto-launch in full screen."
+
+sudo reboot 0
