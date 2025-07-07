@@ -99,7 +99,7 @@ sudo raspi-config nonint do_boot_behaviour B4
 
 echo "📥 Downloading Node Exporter Full dashboard JSON..."
 sudo mkdir -p /var/lib/grafana/dashboards
-wget -O /var/lib/grafana/dashboards/node_exporter_full.json https://grafana.com/api/dashboards/1860/revisions/29/download
+sudo wget -O /var/lib/grafana/dashboards/node_exporter_full.json https://grafana.com/api/dashboards/1860/revisions/29/download
 
 echo "🛠️ Configuring Grafana to auto-import dashboards..."
 sudo tee /etc/grafana/provisioning/dashboards/node_exporter.yml > /dev/null <<EOF
