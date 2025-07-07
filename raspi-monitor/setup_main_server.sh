@@ -75,7 +75,8 @@ sudo apt install -y raspberrypi-ui-mods xserver-xorg x11-xserver-utils unclutter
 echo "🛠️ Configuring kiosk mode on boot..."
 
 KIOSK_URL="http://localhost:3000"
-KIOSK_FILE="/home/pi/.config/lxsession/LXDE-pi/autostart"
+AUTOSTART_DIR="/home/pi/.config/lxsession/LXDE-pi"
+KIOSK_FILE="$AUTOSTART_DIR/autostart"
 
 mkdir -p "$AUTOSTART_DIR"
 cat <<EOF > "$KIOSK_FILE"
