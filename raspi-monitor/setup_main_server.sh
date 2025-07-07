@@ -8,6 +8,8 @@ set -e
 echo "📦 Updating system..."
 sudo apt update && sudo apt upgrade -y
 
+sudo apt install -y raspberrypi-ui-mods xserver-xorg xinit x11-xserver-utils unclutter chromium-browser
+
 echo "📦 Installing NGINX reverse proxy..."
 sudo apt install -y nginx
 
@@ -118,6 +120,14 @@ providers:
       path: /var/lib/grafana/dashboards
 EOF
 
+echo "🔧 Configuring Grafana for anonymous access..."
+
+# Update grafana.ini to allow anonymous viewing
+sudo sed -i 's/;enabled = false/enabled = true/' /etc/grafana/grafana.ini
+sudo sed -i 's/;org_name = Main Org./org_name = Main Org./' /etc/grafana/grafana.ini
+sudo sed -i 's/;org_role = Viewer/org_role = Viewer/' /etc/grafana/grafana.ini
+
+# Restart Grafana to apply changes
 sudo systemctl restart grafana-server
 
 sudo tee /etc/nginx/sites-available/grafana > /dev/null <<EOF
