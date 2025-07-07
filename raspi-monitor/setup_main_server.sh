@@ -13,8 +13,8 @@ echo "⬇️ Installing Prometheus..."
 cd /tmp
 PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep tag_name | cut -d '"' -f 4)
 wget https://github.com/prometheus/prometheus/releases/download/$PROM_VERSION/prometheus-$(echo $PROM_VERSION | cut -c2-).linux-armv7.tar.gz
-tar xvf prometheus-*.linux-armv7.tar.gz
-cd prometheus-*
+tar xvf prometheus-${PROM_VERSION#v}.linux-armv7.tar.gz
+cd prometheus-${PROM_VERSION#v}.linux-armv7
 sudo cp prometheus promtool /usr/local/bin/
 sudo mkdir -p /etc/prometheus /var/lib/prometheus
 sudo cp -r consoles/ console_libraries/ /etc/prometheus/

@@ -8,7 +8,7 @@ This project sets up a **Raspberry Pi** as a central monitoring server using **P
 
 ```bash
 git clone https://github.com/nicopret/homenetwork.git
-cd homenetwork
+cd homenetwork/raspi-monitor
 
 ## Run the Installer
 
