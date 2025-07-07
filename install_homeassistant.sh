@@ -23,9 +23,9 @@ sudo -u homeassistant -H bash -c "
 cd /srv/homeassistant
 python3 -m venv .
 source bin/activate
-pip install --upgrade pip
-pip install wheel
+pip install --upgrade pip wheel
 pip install homeassistant
+pip install 'josepy==1.13.0'
 "
 
 echo "🛠 Creating systemd service for auto-start..."
@@ -54,4 +54,4 @@ sudo systemctl start home-assistant@homeassistant
 
 echo "✅ Home Assistant Core is installed and running!"
 echo "🌐 Access it at: http://<your-pi-ip>:8123"
-echo "🔁 Service status: sudo systemctl status home-assistant@homeassistant"
+echo "🔍 To check logs: sudo journalctl -u home-assistant@homeassistant -e"

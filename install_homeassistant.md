@@ -11,8 +11,7 @@ Steps:
 - Install git with the following:
 
 ``` bash
-sudo apt update
-sudo apt install git
+sudo apt update && sudo apt install git
 ```
 
 Then do a `git --version` to ensure the installation was successful.
