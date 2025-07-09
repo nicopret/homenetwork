@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# This script is for the Raspberry Lite OS
 # Raspberry Pi Monitoring Server Setup with Grafana Kiosk Mode
 # Installs Prometheus, Grafana, and configures auto-start + kiosk dashboard
 
@@ -8,10 +9,11 @@ set -e
 echo "📦 Updating system..."
 sudo apt update && sudo apt upgrade -y
 
+echo "📦 Installing xserver and drivers ..."
 sudo apt install -y raspberrypi-ui-mods xserver-xorg xinit x11-xserver-utils unclutter chromium-browser
 
-echo "📦 Installing NGINX reverse proxy..."
-sudo apt install -y nginx
+echo "📦 Installing Grafana server ..."
+sudo apt install -y nginx grafana xdotool
 
 # === PROMETHEUS SETUP ===
 echo "⬇️ Installing Prometheus..."
@@ -22,9 +24,9 @@ FOLDER="prometheus-${PROM_VERSION_CLEAN}.linux-armv7"
 
 wget https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/${FOLDER}.tar.gz
 tar xvf ${FOLDER}.tar.gz
-cd "$FOLDER"
+cd $FOLDER
 
-# Copy Prometheus binaries
+# Installing Prometheus binaries
 sudo cp prometheus promtool /usr/local/bin/
 sudo mkdir -p /etc/prometheus /var/lib/prometheus
 
@@ -61,6 +63,35 @@ EOF
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now prometheus
+
+# Installing Node Exporter
+echo "⬇️ Installing Node Exporter ..."
+cd /tmp
+NODE_VERSION=$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | grep tag_name | cut -d '"' -f 4)
+NODE_VERSION_CLEAN=${NODE_VERSION#v}
+NODE_FOLDER="node_exporter-${NODE_VERSION_CLEAN}.linux-armv7"
+
+sudo wget https://github.com/prometheus/node_exporter/releases/download/${NODE_VERSION}/${NODE_FOLDER}.tar.gz
+sudo tar xvf ${NODE_FOLDER}.tar.gz
+cd $NODE_FOLDER
+sudo cp node_exporter /usr/local/bin
+
+# Create systemd service for Node Exporter
+cat <<EOF | sudo tee /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=nobody
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=default.target
+EOF
+
+sudo systemctl daemon-reexec
+sudo systemctl enable --now node_exporter
 
 # === GRAFANA SETUP ===
 echo "📦 Installing Grafana..."
@@ -128,6 +159,7 @@ sudo sed -i 's/;org_name = Main Org./org_name = Main Org./' /etc/grafana/grafana
 sudo sed -i 's/;org_role = Viewer/org_role = Viewer/' /etc/grafana/grafana.ini
 
 # Restart Grafana to apply changes
+sudo systemctl enable nginx
 sudo systemctl restart grafana-server
 
 echo "🌐 Fetching external IP..."
@@ -143,10 +175,10 @@ server {
     location / {
         proxy_pass http://localhost:3000/;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade 'websocket';
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Host $EXT_IP;
+        proxy_cache_bypass 'websocket';
     }
 }
 EOF
@@ -155,5 +187,10 @@ sudo ln -s /etc/nginx/sites-available/grafana /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl restart nginx
 
 echo "🎉 DONE! Reboot your Pi and Grafana will auto-launch in full screen."
+
+# Set up kiosk autologin
+sudo raspi-config nonint do_boot_behaviour B4
+mkdir -p ~/.config/openbox
+echo 'chromium-browser --kiosk http://localhost:3000/d/rYdddlPWk/node-exporter-full' > ~/.config/openbox/autostart
 
 sudo reboot 0
