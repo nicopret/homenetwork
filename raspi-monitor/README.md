@@ -43,4 +43,4 @@ You can import [Node Exporter Full Dashboard (ID: 1860)](https://grafana.com/gra
 - Pick a subdomain (e.g., mygrafana)
 - It gives you a domain like: `mygrafana.duckdns.org`
 - Copy your DuckDNS token and paste it in `setup_duckdns.sh`
-
+- Run the script file: `./setup_duckdns.sh`
