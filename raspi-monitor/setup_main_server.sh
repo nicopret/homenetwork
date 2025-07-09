@@ -173,6 +173,15 @@ server {
     server_name ${EXT_IP};
 
     location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name 62.31.17.139;
+
+    location / {
         proxy_pass http://localhost:3000/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade 'websocket';

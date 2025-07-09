@@ -33,4 +33,4 @@ echo "✅ Cron job added."
 sudo certbot --nginx -d $DOMAIN.duckdns.org
 sudo systemctl list-timers | grep certbot
 
-ECHO "✅ Installation finished."
+echo "✅ Installation finished."
