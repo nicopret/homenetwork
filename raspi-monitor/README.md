@@ -32,3 +32,15 @@ chmod +x setup_main_server.sh
 ## Import a Dashboard
 
 You can import [Node Exporter Full Dashboard (ID: 1860)](https://grafana.com/grafana/dashboards/1860-node-exporter-full/) from Grafana's community dashboards.
+
+
+# Use DuckDNS for a Free Subdomain
+
+## Set up DuckDNS:
+
+- Go to https://www.duckdns.org
+- Sign in with GitHub, Google, etc.
+- Pick a subdomain (e.g., mygrafana)
+- It gives you a domain like: `mygrafana.duckdns.org`
+- Copy your DuckDNS token and paste it in `setup_duckdns.sh`
+

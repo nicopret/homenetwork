@@ -170,14 +170,14 @@ echo "📝 Writing NGINX reverse proxy config with server_name = $EXT_IP"
 sudo tee /etc/nginx/sites-available/grafana > /dev/null <<EOF
 server {
     listen 80;
-    server_name $EXT_IP;
+    server_name ${EXT_IP};
 
     location / {
         proxy_pass http://localhost:3000/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade 'websocket';
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $EXT_IP;
+        proxy_set_header Host ${EXT_IP};
         proxy_cache_bypass 'websocket';
     }
 }
