@@ -12,9 +12,6 @@ sudo apt update && sudo apt upgrade -y
 echo "📦 Installing xserver and drivers ..."
 sudo apt install -y raspberrypi-ui-mods xserver-xorg xinit x11-xserver-utils unclutter chromium-browser
 
-echo "📦 Installing Grafana server ..."
-sudo apt install -y nginx grafana xdotool
-
 # === PROMETHEUS SETUP ===
 echo "⬇️ Installing Prometheus..."
 cd /tmp
@@ -100,8 +97,9 @@ sudo mkdir -p /etc/apt/keyrings
 wget -q -O - https://apt.grafana.com/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/grafana.gpg
 echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
 
+echo "📦 Installing Grafana server ..."
 sudo apt update
-sudo apt install grafana -y
+sudo apt install -y nginx grafana xdotool
 sudo systemctl enable --now grafana-server
 
 # === GUI & KIOSK SETUP ===

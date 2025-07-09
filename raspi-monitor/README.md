@@ -4,16 +4,12 @@ This project sets up a **Raspberry Pi** as a central monitoring server using **P
 
 ## 🔧 Setup Instructions
 
-### 1. Clone the Repository
+### 1. Clone the Repository and run the installer
 
 ```bash
-sudo apt install git
+sudo apt install git -y
 git clone https://github.com/nicopret/homenetwork.git
 cd homenetwork/raspi-monitor
-
-## Run the Installer
-
-```bash
 chmod +x setup_main_server.sh
 ./setup_main_server.sh
 ```
