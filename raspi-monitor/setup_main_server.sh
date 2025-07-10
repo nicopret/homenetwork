@@ -99,7 +99,7 @@ echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stab
 
 echo "📦 Installing Grafana server ..."
 sudo apt update
-sudo apt install -y nginx grafana xdotool
+sudo apt install -y nginx-full grafana xdotool
 sudo systemctl enable --now grafana-server
 
 # === GUI & KIOSK SETUP ===
