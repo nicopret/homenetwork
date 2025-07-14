@@ -5,13 +5,13 @@ set -e
 echo "📦 Updating system..."
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y raspberrypi-ui-mods xserver-xorg xinit x11-xserver-utils unclutter chromium-browser
-sudo apt install -y apt-transport-https software-properties-common grafana xdotool jq
+sudo apt install -y apt-transport-https software-properties-common xdotool jq
 
 sudo mkdir -p /etc/apt/keyrings
 wget -q -O - https://apt.grafana.com/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/grafana.gpg
 echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
 
-sudo systemctl enable --now grafana-server
+sudo apt update && sudo apt install -y grafana
 
 KIOSK_URL="http://localhost:3000"
 AUTOSTART_DIR="/home/pi/.config/lxsession/LXDE-pi"
@@ -52,7 +52,8 @@ sudo sed -i 's/;enabled = false/enabled = true/' /etc/grafana/grafana.ini
 sudo sed -i 's/;org_name = Main Org./org_name = Main Org./' /etc/grafana/grafana.ini
 sudo sed -i 's/;org_role = Viewer/org_role = Viewer/' /etc/grafana/grafana.ini
 
-sudo systemctl restart grafana-server
+sudo systemctl enable --now grafana-server
+sudo systemctl start grafana-server
 
 # Wait for Grafana to start
 echo "⏳ Waiting for Grafana to start..."
@@ -66,7 +67,7 @@ curl -s -X POST http://localhost:3000/api/datasources \
   -d '{
     "name":"Prometheus",
     "type":"prometheus",
-    "url":"http://localhost:9090",
+    "url":"http://localhost:9100",
     "access":"proxy",
     "basicAuth":false
   }'
