@@ -16,6 +16,15 @@ Here’s a detailed guide to set up your Raspberry Pi 4 as a powerful ZFS-based 
 - Internet access
 - Static IP recommended
 
+## Clone the Repository and run the installer
+
+```bash
+sudo apt install git -y
+git clone https://github.com/nicopret/homenetwork.git
+cd homenetwork/file-server
+chmod +x 0*.sh
+```
+
 ## 📁 Structure of Scripts
 
 Each script is named by step for clarity:
