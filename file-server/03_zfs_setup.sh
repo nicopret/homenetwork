@@ -19,7 +19,7 @@ for DRIVE in "${DRIVE_LIST[@]}"; do
 done
 
 echo "[+] Creating RAID-Z1 pool named 'tank'..."
-sudo zpool create $POOL_NAME raidz /dev/${DRIVE_LIST[0]} /dev/${DRIVE_LIST[1]} /dev/${DRIVE_LIST[2]} /dev/${DRIVE_LIST[3]}
+sudo zpool create $POOL_NAME raidz -f -o ashift=12 /dev/${DRIVE_LIST[0]} /dev/${DRIVE_LIST[1]} /dev/${DRIVE_LIST[2]} /dev/${DRIVE_LIST[3]}
 
 echo "[+] Creating datasets..."
 for USER in "${USER_LIST[@]}"; do
